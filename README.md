@@ -116,13 +116,103 @@ flowchart TD
 8. **Kết thúc:**  
    Quá trình hoàn tất, trang dashboard được hiển thị cho người dùng.
 
-### Thuật toán hiển thị danh sách Task
-
-### Thuật toán hiển thị danh sách List
-
 ### Thuật toán thêm, sửa, xóa List
 
+# Thuật toán Thêm, Sửa, Xóa List
+
+## Chi tiết các bước:
+
+### Bắt đầu:
+- Hệ thống khởi động chức năng trong `ListController` dựa trên yêu cầu từ người dùng (thêm, sửa, xóa).
+
+### Kiểm tra người dùng đã đăng nhập:
+- Sử dụng `auth()->id()` để lấy ID của người dùng hiện tại.
+- Nếu không có người dùng (chưa đăng nhập), chuyển hướng đến trang đăng nhập (`route to 'login'`).
+- Nếu đã đăng nhập, tiếp tục xử lý yêu cầu.
+
+### Chọn hành động: Thêm/Sửa/Xóa:
+- Xác định hành động dựa trên route được gọi:
+  - `store` cho việc thêm mới.
+  - `update` cho việc sửa.
+  - `destroy` cho việc xóa.
+
+### Thêm List:
+- **Lấy dữ liệu từ Request**: Nhận dữ liệu từ `Request $request` (bao gồm `title` và `description`).
+- **Kiểm tra và xác thực dữ liệu**:
+  - Sử dụng `$request->validate()` để kiểm tra:
+    - `title` là chuỗi bắt buộc, tối đa 255 ký tự.
+    - `description` là chuỗi tùy chọn.
+- **Tạo mới List với dữ liệu đã xác thực**:
+  - Sử dụng `TaskList::create()` với dữ liệu đã xác thực, thêm `user_id` từ `auth()->id()`.
+- **Chuyển hướng về trang `lists.index` với thông báo thành công**:
+  - Sử dụng `redirect()->route('lists.index')->with('success', 'List created successfully!')`.
+
+### Sửa List:
+- **Lấy List cụ thể**: Nhận đối tượng `TaskList $list` thông qua route model binding.
+- **Kiểm tra và xác thực dữ liệu**:
+  - Sử dụng `$request->validate()` để kiểm tra:
+    - `title` là chuỗi bắt buộc, tối đa 255 ký tự.
+    - `description` là chuỗi tùy chọn.
+- **Cập nhật List với dữ liệu đã xác thực**:
+  - Sử dụng `$list->update($validated)` để cập nhật thông tin.
+- **Chuyển hướng về trang `lists.index` với thông báo thành công**:
+  - Sử dụng `redirect()->route('lists.index')->with('success', 'List updated successfully!')`.
+
+### Xóa List:
+- **Lấy List cụ thể**: Nhận đối tượng `TaskList $list` thông qua route model binding.
+- **Xóa List**: Sử dụng `$list->delete()` để xóa bản ghi khỏi cơ sở dữ liệu.
+- **Chuyển hướng về trang `lists.index` với thông báo thành công**:
+  - Sử dụng `redirect()->route('lists.index')->with('success', 'List deleted successfully!')`.
+
+### Kết thúc:
+- Quá trình hoàn tất, người dùng được chuyển hướng về trang danh sách (`lists.index`) với thông báo tương ứng.
+
 ### Thuật toán thêm, sửa, xóa Task
+
+# Thuật toán Thêm, Sửa, Xóa Task
+
+## Chi tiết các bước:
+
+### Bắt đầu:
+- Hệ thống khởi động chức năng trong `TaskController` dựa trên yêu cầu từ người dùng (thêm, sửa, xóa).
+
+### Kiểm tra người dùng đã đăng nhập:
+- Sử dụng `auth()->id()` để lấy ID của người dùng hiện tại.
+- Nếu không có người dùng (chưa đăng nhập), chuyển hướng đến trang đăng nhập (`route to 'login'`).
+- Nếu đã đăng nhập, tiếp tục xử lý yêu cầu.
+
+### Chọn hành động: Thêm/Sửa/Xóa:
+- Xác định hành động dựa trên route được gọi:
+  - `store` cho việc thêm mới.
+  - `update` cho việc sửa.
+  - `destroy` cho việc xóa.
+
+### Thêm Task:
+- **Lấy dữ liệu từ Request**: Nhận dữ liệu từ `Request $request` (bao gồm `title`, `description`, `due_date`, `list_id`, và `is_completed`).
+- **Kiểm tra và xác thực dữ liệu**:
+  - Sử dụng `$request->validate()` để kiểm tra:
+    - `title` là chuỗi bắt buộc, tối đa 255 ký tự.
+    - `description` là chuỗi tùy chọn.
+    - `due_date` là ngày hợp lệ (tùy chọn).
+    - `list_id` là bắt buộc và phải tồn tại trong bảng `lists`.
+    - `is_completed` là kiểu boolean (tùy chọn).
+- **Tạo mới Task với dữ liệu đã xác thực**:
+  - Sử dụng `Task::create($validated)` để lưu Task mới vào cơ sở dữ liệu.
+- **Chuyển hướng về trang `tasks.index` với thông báo thành công**:
+  - Sử dụng `redirect()->route('tasks.index')->with('success', 'Task created successfully!')`.
+
+### Sửa Task:
+- **Lấy Task cụ thể**: Nhận đối tượng `Task $task` thông qua route model binding.
+- **Kiểm tra và xác thực dữ liệu**:
+  - Sử dụng `$request->validate()` để kiểm tra:
+    - `title` là chuỗi bắt buộc, tối đa 255 ký tự.
+    - `description` là chuỗi tùy chọn.
+    - `due_date` là ngày hợp lệ (tùy chọn).
+    - `is_completed` là kiểu boolean (tùy chọn).
+    - `list_id` là bắt buộc và phải tồn tại trong bảng `lists`.
+- **Cập nhật Task với dữ liệu đã xác thực**:
+  - Sử dụng `$task->update($validated)` để cập nhật thông tin.
+- **Chuyển hướng về trang `tasks.index` với thông báo thành công**:
 
 ## Giao diện thực tế
 
